@@ -1,4 +1,4 @@
-# 🚀 JobPrep - AI Interview Preparation Assistant
+# 🚀 JobPrep - Job Interview Preparation Assistant
 
 <div align="center">
 
@@ -12,25 +12,23 @@ Empowering job seekers through intelligent, personalized study roadmaps and last
 
 ## 📖 About The Project
 
-**JobPrep** is an intelligent web application that revolutionizes interview preparation by analyzing the gap between your current skills and job requirements. Using advanced AI technology powered by Google Gemini, it creates personalized study roadmaps with adaptive role-based prompting that help you focus on what matters most for passing your next interview.
+**JobPrep** is an intelligent web application that revolutionizes interview preparation by analyzing the gap between your current skills and job requirements. By using AI technology powered, it creates personalized study roadmaps with adaptive role-based prompting that help you focus on what matters most for passing your next interview.
 
-Instead of spending weeks trying to figure out what to study, JobPrep analyzes your resume against any job description and generates a day-by-day learning plan tailored to your timeline and interview type. Whether you have 3 days or 2 weeks until your interview, JobPrep ensures you're studying the right things in the right order—and if you're completely unprepared, Panic Mode has your back.
+Instead of spending hours or weeks trying to figure out what to study, JobPrep analyzes your resume against any job description and generates a day-by-day learning plan tailored to your timeline and interview type. Whether you have 2 weeks or 2 days until your interview, JobPrep ensures you're studying the right things in the right order, and if you're completely unprepared, Panic Mode has your back.
 
 ### The Problem We Solve
 
 - 😰 Job seekers don't know where to focus their limited preparation time
-- 📊 Difficulty identifying which skills are dealbreakers vs. nice-to-haves
 - 📅 No structured study plan based on available time before interviews
 - 🎯 Overwhelming amount of topics with no clear prioritization
-- 💡 Lack of interview-focused learning (vs. attempting to master everything)
 - 🚨 Last-minute panic when the interview is tomorrow and you haven't prepared
 - 👔 Different interviewers (HR vs Tech Lead vs CEO) require different preparation strategies
 
 ### Our Solution
 
-JobPrep uses Google's powerful Gemini AI with intelligent role-based prompting to compare your background with job requirements, identifying critical gaps and creating actionable daily study plans. The system adapts to your interview type—whether you're facing HR, a technical team, or the CEO—and provides targeted preparation strategies.
+JobPrep uses powerful Gemini AI with intelligent role-based prompting to compare your background with job requirements, identifying critical gaps and creating actionable daily study plans. The system adapts to your interview type, whether you're facing HR, a technical team, or the CEO, and provides targeted preparation strategies.
 
-For those critical last-minute scenarios, **Panic Mode** generates an emergency cheat sheet highlighting only the most critical information you need to survive the interview. The focus is on learning the jargon, concepts, and talking points needed to pass interviews—this pragmatic approach maximizes your success rate while respecting your time constraints.
+For those critical last-minute scenarios, **Panic Mode** generates an emergency cheat sheet highlighting only the most critical information you need to survive the interview. The focus is on learning the jargon, concepts, and talking points needed to pass interviews. This pragmatic approach maximizes your success rate while respecting your time constraints.
 
 ---
 
@@ -42,7 +40,7 @@ For those critical last-minute scenarios, **Panic Mode** generates an emergency 
 | 🎭 **Adaptive Role Prompting** | AI customizes preparation based on interviewer type (HR, Technical, Lead, CTO, CEO, or Mixed Panel) |
 | 🚨 **Panic Mode** | Last-minute interview survival guide with critical gaps, quick wins, must-know topics, and downloadable cheat sheet |
 | 📚 **Dual Learning Modes** | Choose between "Interview Prep" for upcoming interviews or "Learning Mode" for building foundational knowledge |
-| 🗓️ **Customizable Roadmaps** | Generate 3-14 day study plans tailored to your interview timeline and preparation needs |
+| 🗓️ **Customizable Roadmaps** | Generate 1-14 day study plans tailored to your interview timeline and preparation needs |
 | 📝 **Daily Task Breakdown** | Receive structured daily tasks with time estimates, priorities, and clear objectives |
 | ✅ **Progress Tracking** | Check off completed tasks, save your progress, and visualize your preparation journey |
 | 📄 **PDF Upload Support** | Directly upload resume and JD as PDF files with automatic text extraction |
@@ -66,8 +64,6 @@ For those critical last-minute scenarios, **Panic Mode** generates an emergency 
 ### Backend & AI
 - **[FastAPI](https://fastapi.tiangolo.com/)** (v0.109) - Modern, high-performance Python web framework
 - **[Google Gemini](https://deepmind.google/technologies/gemini/)** (v2.5 Flash) - Advanced AI for intelligent gap analysis
-- **[Pydantic](https://pydantic.dev/)** (v2.5) - Data validation with Python type hints
-- **[PyPDF](https://pypdf.readthedocs.io/)** (v4.0) - PDF text extraction
 
 ### Database & Auth
 - **[SQLite](https://www.sqlite.org/)** - Lightweight, serverless SQL database
@@ -76,7 +72,6 @@ For those critical last-minute scenarios, **Panic Mode** generates an emergency 
 
 ### Development Tools
 - **[uv](https://github.com/astral-sh/uv)** - Ultra-fast Python package installer
-- **[Python-dotenv](https://pypi.org/project/python-dotenv/)** - Environment variable management
 - **[Uvicorn](https://www.uvicorn.org/)** - ASGI server for FastAPI
 
 ---
@@ -88,7 +83,7 @@ For those critical last-minute scenarios, **Panic Mode** generates an emergency 
 - **Python** 3.10 or higher
 - **Node.js** v18 or higher
 - **npm** or **yarn** package manager
-- Google Gemini API key ([Get one here](https://ai.google.dev/))
+- Google Gemini API key ([Get one here](https://aistudio.google.com/api-keys))
 - Firebase project with Google Authentication enabled
 
 ### Installation
@@ -269,10 +264,8 @@ JobPrep/
 │   ├── setup_venv.sh              # Linux/Mac setup script
 │   ├── .env.example               # Environment variables template
 │   ├── services/
-│   │   ├── gemini_service.py      # Google Gemini AI integration with role prompting
-│   │   └── pdf_service.py         # PDF text extraction
-│   └── utils/
-│       └── guardrails.py          # AI safety and content filtering
+│       ├── gemini_service.py      # Google Gemini AI integration with role prompting
+│       └── pdf_service.py         # PDF text extraction
 │
 └── frontend/
     ├── src/
@@ -327,99 +320,6 @@ JobPrep/
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase sender ID | `123456789` |
 | `VITE_FIREBASE_APP_ID` | Firebase app ID | `1:123:web:abc` |
 | `VITE_API_URL` | Backend API URL | `http://localhost:8000` |
-
----
-
-## 📦 API Endpoints
-
-### Backend REST API
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Health check |
-| `/analyze_gap` | POST | Analyze resume vs job description with role-based prompting |
-| `/panic_mode` | POST | Generate last-minute interview survival cheat sheet |
-| `/parse_pdf` | POST | Extract text from PDF file |
-| `/users` | POST | Create or update user |
-| `/users/{google_id}` | GET | Get user by Google ID |
-| `/roadmaps` | POST | Save a roadmap |
-| `/roadmaps/user/{google_id}` | GET | Get all roadmaps for a user |
-| `/roadmaps/{roadmap_id}` | GET | Get specific roadmap |
-| `/roadmaps/{roadmap_id}` | DELETE | Delete a roadmap |
-
-#### Example: Analyze Gap Request (with Role Prompting)
-
-```json
-POST /analyze_gap
-{
-  "resume_text": "Software Engineer with 3 years experience...",
-  "jd_text": "Looking for Senior React Developer...",
-  "preparation_days": 7,
-  "interview_mode": "interview",
-  "interviewer_type": "technical"
-}
-```
-
-#### Example: Analyze Gap Response
-
-```json
-{
-  "match_percentage": 75,
-  "gap_analysis": {
-    "critical_gaps": ["Advanced React Hooks", "GraphQL"],
-    "partial_skills": ["TypeScript", "Testing"]
-  },
-  "daily_roadmap": [
-    {
-      "day": 1,
-      "title": "React Fundamentals Deep Dive",
-      "focus": "Advanced Hooks & State Management",
-      "tasks": [...]
-    }
-  ],
-  "summary": "Focus on React ecosystem and GraphQL basics..."
-}
-```
-
-#### Example: Panic Mode Request
-
-```json
-POST /panic_mode
-{
-  "resume_text": "Software Engineer with 3 years experience...",
-  "jd_text": "Looking for Senior React Developer...",
-  "interview_mode": "interview",
-  "interviewer_type": "cto"
-}
-```
-
-#### Example: Panic Mode Response
-
-```json
-{
-  "critical_gaps": [
-    "System architecture and scalability patterns",
-    "Technical strategy and decision-making"
-  ],
-  "quick_wins": [
-    "Your experience with React and microservices",
-    "Leadership in previous projects"
-  ],
-  "must_know_topics": [
-    {
-      "topic": "System Design Fundamentals",
-      "why": "CTOs expect you to think at scale",
-      "key_points": "CAP theorem, load balancing, caching strategies"
-    }
-  ],
-  "survival_tips": [
-    "Speak in terms of business impact, not just technical details"
-  ],
-  "talking_points": [
-    "Led migration project that improved performance by 40%"
-  ]
-}
-```
 
 ---
 
@@ -491,18 +391,14 @@ When you're unprepared and the interview is tomorrow, Panic Mode generates a foc
 ---
 ## 🤖 AI Usage
 
-This project extensively uses **Claude Sonnet 4.5** for:
-- Architecture design and planning
-- Code generation with careful framework selection
-- Feature implementation and optimization
-- Role-based prompt engineering for Gemini AI integration
-- User experience flow design
+This project uses **Gemini 3.0 Pro** to:
+- Design prompts
 
-The AI-powered features leverage **Google Gemini 2.0 Flash** for:
-- Resume and job description gap analysis
-- Intelligent roadmap generation
-- Adaptive role-based interview preparation
-- Panic mode emergency cheat sheet creation
+**Claude Sonnet 4.5** for:
+- Code generation with careful framework selection
+- Feature implementation
+
+We manually review for code/suggestion before using
 
 ---
 
@@ -519,8 +415,8 @@ The AI-powered features leverage **Google Gemini 2.0 Flash** for:
 
 ## 📧 Contact & Support
 
-- **Project Repository**: [JobPrep on GitHub](https://github.com/yourusername/JobPrep)
-- **Report Issues**: [GitHub Issues](https://github.com/yourusername/JobPrep/issues)
+- **Project Repository**: [JobPrep on GitHub](https://github.com/tothanhdat2006/JobPrep)
+- **Report Issues**: [GitHub Issues](https://github.com/tothanhdat2006/JobPrep/issues)
 
 ---
 
@@ -528,8 +424,6 @@ The AI-powered features leverage **Google Gemini 2.0 Flash** for:
 <div align="center">
 
 **Made with ❤️ to help job seekers succeed in their interviews**
-
-*From last-minute panic to confident preparation*
 
 ⭐ Star this repo if you find it helpful!
 
