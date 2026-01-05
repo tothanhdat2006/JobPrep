@@ -1,0 +1,247 @@
+/* UserProfile Modal Animations and Custom Styles */
+
+/* Modal backdrop animation */
+.profile-modal-backdrop {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal container animation */
+.profile-modal-container {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth scroll for modal content */
+.profile-modal-backdrop {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for modal */
+.profile-modal-backdrop::-webkit-scrollbar {
+  width: 8px;
+}
+
+.profile-modal-backdrop::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.profile-modal-backdrop::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.profile-modal-backdrop::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Focus states for better accessibility */
+.profile-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Card hover effects */
+.profile-card {
+  transition: all 0.2s ease;
+}
+
+.profile-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Button animations */
+.profile-button {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-button:active {
+  transform: scale(0.98);
+}
+
+.profile-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.profile-button:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Delete button shake animation on hover */
+.delete-button:hover {
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+/* Section divider animation */
+.profile-section {
+  animation: fadeInUp 0.4s ease-out backwards;
+}
+
+.profile-section:nth-child(1) { animation-delay: 0.05s; }
+.profile-section:nth-child(2) { animation-delay: 0.1s; }
+.profile-section:nth-child(3) { animation-delay: 0.15s; }
+.profile-section:nth-child(4) { animation-delay: 0.2s; }
+.profile-section:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header gradient animation */
+.profile-header {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Add item button pulse effect */
+.add-button {
+  transition: all 0.2s ease;
+}
+
+.add-button:hover {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Save success animation */
+@keyframes successBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.save-success {
+  animation: successBounce 0.4s ease;
+}
+
+/* Input field transitions */
+.profile-input,
+.profile-textarea {
+  transition: all 0.2s ease;
+}
+
+.profile-input:hover,
+.profile-textarea:hover {
+  border-color: #94a3b8;
+}
+
+/* Card entry animation */
+.profile-card-enter {
+  animation: cardEnter 0.3s ease-out;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-modal-container {
+    animation: slideUp 0.2s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Loading state */
+.profile-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Disabled state */
+.profile-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
