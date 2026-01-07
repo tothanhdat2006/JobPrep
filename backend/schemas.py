@@ -8,13 +8,16 @@ class AnalyzeGapRequest(BaseModel):
     preparation_days: int = Field(..., ge=1, le=14, description="Number of days for preparation (1-14)")
     interview_mode: str = Field(default="interview", description="Mode: 'learn' or 'interview'")
     interviewer_type: Optional[str] = Field(default="technical", description="Type: 'hr', 'technical', 'lead', 'cto', 'ceo', 'mixed'")
+    learning_style: Optional[str] = Field(default="theory_code", description="For 'learn' mode: 'project' or 'theory_code'")
 
 
 class DailyTask(BaseModel):
     task: str
-    type: str  # "Read", "Build", "Code", "Practice"
+    type: str  # "Read", "Build", "Code", "Practice", "Project"
     duration: str
     completed: bool = False
+    gap_type: Optional[str] = None  # "critical", "partial", or None
+    gap_index: Optional[int] = None  # Position in critical_gaps or partial_skills list (0-indexed)
 
 
 class DayRoadmap(BaseModel):
@@ -30,7 +33,6 @@ class GapAnalysis(BaseModel):
 
 
 class AnalyzeGapResponse(BaseModel):
-    match_percentage: int = Field(..., ge=0, le=100)
     gap_analysis: GapAnalysis
     daily_roadmap: List[DayRoadmap]
     summary: str

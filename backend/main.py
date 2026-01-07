@@ -58,7 +58,8 @@ async def analyze_gap(request: AnalyzeGapRequest):
             jd_text=request.jd_text,
             preparation_days=request.preparation_days,
             interview_mode=request.interview_mode,
-            interviewer_type=request.interviewer_type
+            interviewer_type=request.interviewer_type,
+            learning_style=request.learning_style or "theory_code"
         )
         return result
     except Exception as e:
@@ -151,7 +152,8 @@ async def panic_mode(request: PanicModeRequest):
             resume_text=request.resume_text,
             jd_text=request.jd_text,
             interview_mode=request.interview_mode,
-            interviewer_type=request.interviewer_type
+            interviewer_type=request.interviewer_type,
+            learning_style="theory_code"  # Default for panic mode
         )
         return result
     except Exception as e:

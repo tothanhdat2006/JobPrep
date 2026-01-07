@@ -12,21 +12,30 @@ Empowering job seekers through intelligent, personalized study roadmaps and last
 
 ## 📖 About The Project
 
-**JobPrep** is an intelligent web application that revolutionizes interview preparation by analyzing the gap between your current skills and job requirements. By using AI technology powered, it creates personalized study roadmaps with adaptive role-based prompting that help you focus on what matters most for passing your next interview.
+**JobPrep** is an intelligent web application designed specifically for students and fresh graduates facing the challenge of uncertain job requirements. Many companies have varying skill and techstack demands, making it difficult for students to know exactly what to prepare for their dream job.
+
+Our platform addresses a fundamental assumption: students have sufficient foundational knowledge and position understanding, but lack confidence in specific skills/techstacks that companies require. JobPrep analyzes the gap between your current capabilities and job requirements, then creates personalized study roadmaps with adaptive role-based prompting to bridge that gap efficiently.
 
 Instead of spending hours or weeks trying to figure out what to study, JobPrep analyzes your resume against any job description and generates a day-by-day learning plan tailored to your timeline and interview type. Whether you have 2 weeks or 2 days until your interview, JobPrep ensures you're studying the right things in the right order, and if you're completely unprepared, Panic Mode has your back.
 
-### The Problem We Solve
+### The Core Problem
 
-- 😰 Job seekers don't know where to focus their limited preparation time
-- 📅 No structured study plan based on available time before interviews
-- 🎯 Overwhelming amount of topics with no clear prioritization
-- 🚨 Last-minute panic when the interview is tomorrow and you haven't prepared
-- 👔 Different interviewers (HR vs Tech Lead vs CEO) require different preparation strategies
+Students entering the job market face significant anxiety about meeting diverse employer requirements. The primary challenge splits into two distinct scenarios:
+
+1. **📚 Already Learned, But Lack Confidence** - Students have studied the required skills/techstack but need structured review to build confidence and ensure interview readiness
+
+2. **⚡ Haven't Learned, Need Rapid Acquisition** - Students haven't been exposed to the specific skills/techstack the company requires and need to learn them quickly before the interview
+
+**Core Requirement:** Students need a centralized platform to either review existing knowledge or rapidly learn new skills/techstacks that companies demand for job applications and interview preparation.
 
 ### Our Solution
 
-JobPrep uses powerful Gemini AI with intelligent role-based prompting to compare your background with job requirements, identifying critical gaps and creating actionable daily study plans. The system adapts to your interview type, whether you're facing HR, a technical team, or the CEO, and provides targeted preparation strategies.
+JobPrep uses powerful Gemini AI with intelligent role-based prompting to compare your background with job requirements, identifying critical gaps and creating actionable daily study plans. Whether you need to **review and reinforce** what you already know or **learn from scratch** under time pressure, our system adapts to your specific situation.
+
+The platform categorizes your skills into:
+- ✅ **Strengths to leverage** - What you already know well
+- ⚠️ **Partial knowledge needing review** - Skills you've learned but need to refresh
+- 🚨 **Critical gaps requiring immediate learning** - New skills/techstacks you must acquire
 
 For those critical last-minute scenarios, **Panic Mode** generates an emergency cheat sheet highlighting only the most critical information you need to survive the interview. The focus is on learning the jargon, concepts, and talking points needed to pass interviews. This pragmatic approach maximizes your success rate while respecting your time constraints.
 
@@ -41,11 +50,6 @@ For those critical last-minute scenarios, **Panic Mode** generates an emergency 
 | 🚨 **Panic Mode** | Last-minute interview survival guide with critical gaps, quick wins, must-know topics, and downloadable cheat sheet |
 | 📚 **Dual Learning Modes** | Choose between "Interview Prep" for upcoming interviews or "Learning Mode" for building foundational knowledge |
 | 🗓️ **Customizable Roadmaps** | Generate 1-14 day study plans tailored to your interview timeline and preparation needs |
-| 📝 **Daily Task Breakdown** | Receive structured daily tasks with time estimates, priorities, and clear objectives |
-| ✅ **Progress Tracking** | Check off completed tasks, save your progress, and visualize your preparation journey |
-| 📄 **PDF Upload Support** | Directly upload resume and JD as PDF files with automatic text extraction |
-| 💾 **Roadmap Management** | Save, load, and manage multiple roadmaps for different job applications |
-| 🔐 **Google Authentication** | Secure sign-in with Firebase Google OAuth |
 | 🎯 **Priority-Based Learning** | Focus on dealbreaker skills first, then strengthen partial knowledge areas |
 | 📥 **Export Options** | Download panic mode cheat sheets and study plans for offline review |
 

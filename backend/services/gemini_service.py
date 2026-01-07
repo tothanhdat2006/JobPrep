@@ -14,23 +14,35 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
-def get_interview_context(interview_mode: str = "interview", interviewer_type: str = "technical") -> str:
+def get_interview_context(interview_mode: str = "interview", interviewer_type: str = "technical", learning_style: str = "theory_code") -> str:
     """
     Generate interview context description based on mode and interviewer type.
     
     Args:
         interview_mode: Either "learn" or "interview"
         interviewer_type: One of "hr", "technical", "lead", "cto", "ceo", "mixed"
+        learning_style: For "learn" mode - "project" or "theory_code"
     
     Returns:
         Formatted context string for AI prompt
     """
     if interview_mode == "learn":
-        return """The candidate wants to LEARN and build foundational knowledge before applying for this role.
+        if learning_style == "project":
+            return """The candidate wants to LEARN through PROJECT-BASED learning before applying for this role.
 Focus on:
-- Building core competencies from scratch
-- Understanding fundamental concepts deeply
-- Practical projects to build a portfolio
+- Building real-world projects that demonstrate the required skills
+- Hands-on implementation and portfolio development
+- Learning by doing with practical applications
+- Creating tangible deliverables to showcase
+- Iterative building and testing
+"""
+        else:  # theory_code
+            return """The candidate wants to LEARN through THEORY + CODE practice before applying for this role.
+Focus on:
+- Understanding theoretical foundations first
+- Practicing with coding exercises and problems
+- Building core competencies through structured learning
+- Combining conceptual knowledge with coding practice
 - Self-assessment and skill validation
 """
     
@@ -93,14 +105,15 @@ async def analyze_gap_with_gemini(
     jd_text: str, 
     preparation_days: int,
     interview_mode: str = "interview",
-    interviewer_type: str = "technical"
+    interviewer_type: str = "technical",
+    learning_style: str = "theory_code"
 ) -> AnalyzeGapResponse:
     """
     Use Google Gemini to analyze the gap between resume and job description.
     Returns structured roadmap data.
     """
     # Get interview context using the reusable function
-    mode_context = get_interview_context(interview_mode, interviewer_type)
+    mode_context = get_interview_context(interview_mode, interviewer_type, learning_style)
     
     system_prompt = f"""You are an expert tech recruiter and career coach. Analyze the candidate's resume against the job description.
 
@@ -108,18 +121,23 @@ PREPARATION CONTEXT:
 {mode_context}
 
 Your task:
-1. Calculate a match percentage (0-100) based on skills, experience, and requirements alignment
-2. Identify CRITICAL gaps (dealbreakers that could eliminate the candidate)
-3. Identify PARTIAL skills (areas where the candidate has some but not complete expertise)
-4. Create a {preparation_days}-day study roadmap focused on the preparation context above
+1. Identify CRITICAL gaps (dealbreakers that could eliminate the candidate) - list them in priority order
+2. Identify PARTIAL skills (areas where the candidate has some but not complete expertise) - list them in priority order
+3. Create a {preparation_days}-day study roadmap focused on the preparation context above
 
-IMPORTANT RULES:
+IMPORTANT: Generate all content in ENGLISH, regardless of the language used in the resume or job description.
+
+IMPORTANT RULES FOR TASKS:
+- Each task MUST specify which skill gap it addresses
+- For each task, include:
+  * gap_type: "critical" if addressing critical_gaps, "partial" if addressing partial_skills, null if general
+  * gap_index: The 0-based index position in the respective gaps list (e.g., 0 for first critical gap, 1 for second)
 - Tailor tasks to the specific preparation context (learning vs interview type)
 - Focus on jargon, concepts, and interview talking points, NOT full mastery
-- Prioritize skills that will come up in the specific interview context
+- Prioritize critical gaps first, then partial skills
 - Each day should have 3-5 tasks
 - Tasks should be concrete and actionable
-- Task types: "Read", "Build", "Code", "Practice"
+- Task types: "Read", "Build", "Code", "Practice", "Project"
 - Include realistic time estimates
 
 Resume:
@@ -130,10 +148,9 @@ Job Description:
 
 Return ONLY valid JSON in this exact format:
 {{
-  "match_percentage": 75,
   "gap_analysis": {{
-    "critical_gaps": ["List of critical missing skills"],
-    "partial_skills": ["List of partially known skills"]
+    "critical_gaps": ["Gap 1 (highest priority)", "Gap 2", "Gap 3"],
+    "partial_skills": ["Skill 1 (highest priority)", "Skill 2"]
   }},
   "daily_roadmap": [
     {{
@@ -145,7 +162,9 @@ Return ONLY valid JSON in this exact format:
           "task": "Task description",
           "type": "Read",
           "duration": "2 hours",
-          "completed": false
+          "completed": false,
+          "gap_type": "critical",
+          "gap_index": 0
         }}
       ]
     }}
@@ -201,7 +220,6 @@ Return ONLY valid JSON in this exact format:
             daily_roadmap.append(day_roadmap)
         
         return AnalyzeGapResponse(
-            match_percentage=result_dict["match_percentage"],
             gap_analysis=gap_analysis,
             daily_roadmap=daily_roadmap,
             summary=result_dict["summary"]
@@ -228,7 +246,6 @@ async def generate_topic_content_with_gemini(
     
     # Create learning style instructions
     style_instructions = {
-        "visual": "Use diagrams descriptions, flowcharts, mind maps, and visual analogies. Include ASCII art or describe visual representations when helpful.",
         "practical": "Focus on hands-on examples, code snippets, real-world applications, and step-by-step tutorials. Include practical exercises.",
         "theoretical": "Provide in-depth explanations, underlying principles, academic concepts, and comprehensive theory. Include references to documentation.",
         "balanced": "Mix theory with practical examples, include both conceptual explanations and hands-on demonstrations."
@@ -256,6 +273,12 @@ TASK TYPE: {task_type}
 LEARNING STYLE: {learning_style}
 Instructions: {style_instruction}
 
+IMPORTANT: 
+- Generate all content in ENGLISH, regardless of the language used in the resume or job description.
+- Do NOT start with phrases like "Great work on...", "Excellent background in...", etc.
+- Focus directly on explaining the topic without addressing the candidate personally.
+- Do not provide background information, context, or moralizing text. Output only the requested content. 
+
 Generate educational content (300-500 words) that:
 1. Explains the topic clearly in context of the job requirements
 2. Connects to what the candidate already knows
@@ -263,7 +286,7 @@ Generate educational content (300-500 words) that:
 4. Provides actionable takeaways for interview preparation
 5. Matches the {learning_style} learning style
 
-Keep the tone encouraging and practical. Focus on interview readiness, not full mastery. Limit in 300-500 words
+Keep the tone encouraging and practical. Focus on interview readiness, not full mastery. Limit in 300-500 words. No yapping.
 """
 
     try:
@@ -289,14 +312,15 @@ async def generate_panic_mode_with_gemini(
     resume_text: str, 
     jd_text: str,
     interview_mode: str = "interview",
-    interviewer_type: str = "technical"
+    interviewer_type: str = "technical",
+    learning_style: str = "theory_code"
 ) -> PanicModeResponse:
     """
     Generate a last-minute interview cheat sheet for candidates with limited time.
     Focus on critical gaps, quick wins, and survival tips.
     """
     # Get interview context using the reusable function
-    mode_context = get_interview_context(interview_mode, interviewer_type)
+    mode_context = get_interview_context(interview_mode, interviewer_type, learning_style)
     
     system_prompt = f"""You are an expert interview coach helping a candidate prepare for a LAST-MINUTE interview.
 
@@ -309,6 +333,8 @@ The candidate has very limited time. Generate an emergency cheat sheet focusing 
 3. MUST-KNOW TOPICS (3-5 topics): Each with concise talking points they can memorize
 4. SURVIVAL TIPS (3-5 tips): Practical interview advice specific to the interview context
 5. TALKING POINTS (3-5 points): How to discuss their experience confidently
+
+IMPORTANT: Generate all content in ENGLISH, regardless of the language used in the resume or job description.
 
 Resume:
 {resume_text}

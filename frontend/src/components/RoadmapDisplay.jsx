@@ -10,7 +10,6 @@ import {
   TrendingUp,
   AlertTriangle,
   StickyNote,
-  Save,
   Download
 } from 'lucide-react';
 import { generateTopicContent } from '../services/api';
@@ -85,9 +84,39 @@ const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgr
         return <Hammer size={16} className="text-orange-600" />;
       case 'practice':
         return <Target size={16} className="text-purple-600" />;
+      case 'project':
+        return <Hammer size={16} className="text-indigo-600" />;
       default:
         return <BookOpen size={16} className="text-blue-600" />;
     }
+  };
+
+  const getGapBadge = (task) => {
+    if (!task.gap_type || task.gap_index === null || task.gap_index === undefined) {
+      return null;
+    }
+
+    const isCritical = task.gap_type === 'critical';
+    const gapList = isCritical ? data.gap_analysis.critical_gaps : data.gap_analysis.partial_skills;
+    const gapName = gapList[task.gap_index];
+    const position = task.gap_index + 1;
+    const totalGaps = gapList.length;
+
+    return (
+      <div 
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+          isCritical 
+            ? 'bg-red-100 text-red-700 border border-red-200' 
+            : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+        }`}
+        title={gapName}
+      >
+        <span>{isCritical ? '🚨' : '⚡'}</span>
+        <span>
+          {isCritical ? 'Critical' : 'Strengthen'} #{position}/{totalGaps}
+        </span>
+      </div>
+    );
   };
 
   const calculateProgress = () => {
@@ -156,20 +185,7 @@ const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgr
               )}
             </div>
             <div className="flex flex-col items-end gap-3">
-              <div className="text-right">
-                <div className="text-4xl font-bold text-blue-600">
-                  {data.match_percentage}%
-                </div>
-                <div className="text-sm text-slate-600">Match Score</div>
-              </div>
               <div className="flex gap-2">
-                <button
-                  onClick={saveProgress}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium shadow-sm hover:shadow"
-                >
-                  <Save size={18} />
-                  Save Progress
-                </button>
                 <button
                   onClick={downloadProgress}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition font-medium shadow-sm hover:shadow"
@@ -187,9 +203,11 @@ const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgr
         {/* Learning Style Selector */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
           <h3 className="text-lg font-semibold text-slate-800 mb-3">Learning Style Preference</h3>
+          <p className="text-sm text-slate-600 mb-4">
+            Choose how you'd like the AI to generate detailed content for each task when you click "View Details". This customizes the explanations and learning materials inside each day's tasks.
+          </p>
           <div className="flex flex-wrap gap-3">
             {[
-              { value: 'visual', label: '👁️ Visual', desc: 'Diagrams & illustrations' },
               { value: 'practical', label: '🛠️ Practical', desc: 'Hands-on examples' },
               { value: 'theoretical', label: '📚 Theoretical', desc: 'In-depth concepts' },
               { value: 'balanced', label: '⚖️ Balanced', desc: 'Mix of all styles' }
@@ -330,11 +348,12 @@ const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgr
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 {getTaskIcon(task.type)}
                                 <span className="text-sm font-semibold text-slate-600 uppercase">
                                   {task.type}
                                 </span>
+                                {getGapBadge(task)}
                                 <span className="text-sm text-slate-500">
                                   • {task.duration}
                                 </span>

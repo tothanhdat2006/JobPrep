@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [panicLoading, setPanicLoading] = useState(false);
   const [interviewMode, setInterviewMode] = useState('interview'); // 'learn' or 'interview'
   const [interviewerType, setInterviewerType] = useState('technical');
+  const [learningStyle, setLearningStyle] = useState('theory_code'); // 'project' or 'theory_code'
 
   const handlePDFUpload = async (e, setTextFunction) => {
     const file = e.target.files[0];
@@ -63,7 +64,8 @@ const Dashboard = () => {
         jdText, 
         preparationDays,
         interviewMode,
-        interviewMode === 'interview' ? interviewerType : null
+        interviewMode === 'interview' ? interviewerType : null,
+        interviewMode === 'learn' ? learningStyle : 'theory_code'
       );
       setRoadmapData(result);
     } catch (err) {
@@ -328,6 +330,51 @@ const Dashboard = () => {
                     <div className="text-xs text-slate-600">{type.desc}</div>
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Learning Style Selection for Learn Mode */}
+          {interviewMode === 'learn' && (
+            <div className="mt-4 pt-4 border-t border-slate-200">
+              <h4 className="text-md font-semibold text-slate-800 mb-3">How do you want to learn?</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button
+                  onClick={() => setLearningStyle('project')}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    learningStyle === 'project'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">🛠️</div>
+                    <div>
+                      <div className="font-semibold text-slate-800 mb-1">Project-Based Learning</div>
+                      <div className="text-sm text-slate-600">
+                        Build real-world projects and learn through hands-on implementation
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setLearningStyle('theory_code')}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    learningStyle === 'theory_code'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">📖</div>
+                    <div>
+                      <div className="font-semibold text-slate-800 mb-1">Theory + Code Practice</div>
+                      <div className="text-sm text-slate-600">
+                        Study concepts first, then practice with coding exercises
+                      </div>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
           )}

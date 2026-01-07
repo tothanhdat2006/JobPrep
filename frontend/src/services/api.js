@@ -19,13 +19,14 @@ export const getUser = async (googleId) => {
   return response.data;
 };
 
-export const analyzeGap = async (resumeText, jdText, preparationDays, interviewMode = 'interview', interviewerType = 'technical') => {
+export const analyzeGap = async (resumeText, jdText, preparationDays, interviewMode = 'interview', interviewerType = 'technical', learningStyle = 'theory_code') => {
   const response = await api.post('/analyze_gap', {
     resume_text: resumeText,
     jd_text: jdText,
     preparation_days: preparationDays,
     interview_mode: interviewMode,
     interviewer_type: interviewerType,
+    learning_style: learningStyle,
   });
   return response.data;
 };
