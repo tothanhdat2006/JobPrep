@@ -1,4 +1,5 @@
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import os
 import json
 import logging
@@ -16,7 +17,8 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY not found in environment variables")
 
-genai.configure(api_key=GOOGLE_API_KEY)
+# Initialize Gemini client
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 
 def get_interview_context(interview_mode: str = "interview", interviewer_type: str = "technical", learning_style: str = "theory_code") -> str:
@@ -199,64 +201,47 @@ Return ONLY valid JSON in this exact format:
         logger.debug(f"[GEMINI] Interviewer Type: {interviewer_type}, Learning Style: {learning_style}")
         logger.debug(f"[GEMINI] Resume length: {len(resume_text)} chars, JD length: {len(jd_text)} chars")
         
-        # Use Gemini Flash model
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        
         # Configuration - increase max tokens for longer roadmaps
         max_tokens = 16384 if preparation_days > 14 else 8192
         logger.info(f"[GEMINI] Using max_output_tokens: {max_tokens}")
         
-        # Configuration
-        gen_config = {
-            'temperature': 0.7,
-            'top_p': 0.95,
-            'top_k': 40,
-            'max_output_tokens': max_tokens,
-        }
-        logger.debug(f"[GEMINI] Generation config: {gen_config}")
-        
-        # Call Gemini API
-        logger.info("[GEMINI] Calling Gemini API...")
-        response = model.generate_content(
-            system_prompt,
-            generation_config=gen_config
+        # Call Gemini API with new client
+        logger.info("[GEMINI] Calling Gemini API with JSON schema...")
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=system_prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.7,
+                top_p=0.95,
+                top_k=40,
+                max_output_tokens=max_tokens,
+                response_mime_type='application/json',
+                response_schema=AnalyzeGapResponse,
+            )
         )
         
         # Log response metadata
-        logger.info(f"[GEMINI] Response received - Candidates: {len(response.candidates) if hasattr(response, 'candidates') else 'N/A'}")
+        logger.info(f"[GEMINI] Response received successfully")
         
         # Track token usage metadata
-        if hasattr(response, 'usageMetadata') and response.usageMetadata:
-            usage = response.usageMetadata
+        if hasattr(response, 'usage_metadata') and response.usage_metadata:
+            usage = response.usage_metadata
             logger.info(f"[GEMINI] Token Usage:")
-            logger.info(f"  - Prompt tokens: {usage.prompt_token_count if hasattr(usage, 'prompt_token_count') else 'N/A'}")
-            logger.info(f"  - Candidates tokens: {usage.candidates_token_count if hasattr(usage, 'candidates_token_count') else 'N/A'}")
-            logger.info(f"  - Total tokens: {usage.total_token_count if hasattr(usage, 'total_token_count') else 'N/A'}")
+            logger.info(f"  - Prompt tokens: {getattr(usage, 'prompt_token_count', 'N/A')}")
+            logger.info(f"  - Candidates tokens: {getattr(usage, 'candidates_token_count', 'N/A')}")
+            logger.info(f"  - Total tokens: {getattr(usage, 'total_token_count', 'N/A')}")
             
             # Additional metadata if available
             if hasattr(usage, 'cached_content_token_count') and usage.cached_content_token_count:
                 logger.info(f"  - Cached content tokens: {usage.cached_content_token_count}")
-            if hasattr(usage, 'thoughts_token_count') and usage.thoughts_token_count:
-                logger.info(f"  - Thoughts tokens: {usage.thoughts_token_count}")
         else:
-            logger.warning("[GEMINI] No usageMetadata available in response")
+            logger.warning("[GEMINI] No usage_metadata available in response")
         
-        # Extract and parse JSON response
+        # Extract and parse JSON response (already validated by schema)
         response_text = response.text.strip()
-        logger.debug(f"[GEMINI] Raw response length: {len(response_text)} chars")
+        logger.debug(f"[GEMINI] Response length: {len(response_text)} chars")
         
-        # Remove markdown code blocks if present
-        if response_text.startswith('```json'):
-            response_text = response_text[7:]
-        if response_text.startswith('```'):
-            response_text = response_text[3:]
-        if response_text.endswith('```'):
-            response_text = response_text[:-3]
-        
-        response_text = response_text.strip()
-        logger.debug(f"[GEMINI] Cleaned response length: {len(response_text)} chars")
-        
-        # Parse JSON
+        # Parse JSON (no need to clean markdown since we use response_schema)
         logger.info("[GEMINI] Parsing JSON response...")
         result_dict = json.loads(response_text)
         
@@ -359,16 +344,15 @@ Keep the tone encouraging and practical. Focus on interview readiness, not full 
 """
 
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        
-        response = model.generate_content(
-            system_prompt,
-            generation_config={
-                'temperature': 0.8,
-                'top_p': 0.95,
-                'top_k': 40,
-                'max_output_tokens': 8192,
-            }
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=system_prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.8,
+                top_p=0.95,
+                top_k=40,
+                max_output_tokens=8192,
+            )
         )
         
         return response.text.strip()
@@ -430,17 +414,22 @@ Keep talking points concise and interview-ready. Use markdown formatting for rea
 """
 
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content(system_prompt)
+        # Call Gemini API with new client
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=system_prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.7,
+                top_p=0.95,
+                top_k=40,
+                max_output_tokens=8192,
+                response_mime_type='application/json',
+                response_schema=PanicModeResponse,
+            )
+        )
         
-        json_text = response.text.strip()
-        if json_text.startswith('```json'):
-            json_text = json_text[7:]
-        if json_text.endswith('```'):
-            json_text = json_text[:-3]
-        json_text = json_text.strip()
-        
-        data = json.loads(json_text)
+        # Parse JSON (already validated by schema)
+        data = json.loads(response.text.strip())
         
         must_know_topics = [
             MustKnowTopic(
