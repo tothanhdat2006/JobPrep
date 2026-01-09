@@ -31,11 +31,11 @@ export const analyzeGap = async (resumeText, jdText, preparationDays, interviewM
   return response.data;
 };
 
-export const parsePDF = async (file) => {
+export const parseFile = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
   
-  const response = await api.post('/parse_pdf', formData, {
+  const response = await api.post('/parse_file', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

@@ -5,7 +5,7 @@ from typing import List, Optional
 class AnalyzeGapRequest(BaseModel):
     resume_text: str = Field(..., min_length=10, description="Resume text content")
     jd_text: str = Field(..., min_length=10, description="Job description text content")
-    preparation_days: int = Field(..., ge=1, le=14, description="Number of days for preparation (1-14)")
+    preparation_days: int = Field(..., ge=1, le=30, description="Number of days for preparation (1-30)")
     interview_mode: str = Field(default="interview", description="Mode: 'learn' or 'interview'")
     interviewer_type: Optional[str] = Field(default="technical", description="Type: 'hr', 'technical', 'lead', 'cto', 'ceo', 'mixed'")
     learning_style: Optional[str] = Field(default="theory_code", description="For 'learn' mode: 'project' or 'theory_code'")

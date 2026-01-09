@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { analyzeGap, parsePDF, generatePanicMode } from '../services/api';
+import { analyzeGap, parseFile, generatePanicMode } from '../services/api';
 import RoadmapDisplay from '../components/RoadmapDisplay';
 import Header from '../components/Header';
 import UserProfile from '../components/UserProfile';
@@ -29,7 +29,7 @@ const Dashboard = () => {
   const [showYourRoadmap, setShowYourRoadmap] = useState(false);
   const [panicModeData, setPanicModeData] = useState(null);
   const [panicLoading, setPanicLoading] = useState(false);
-  const [interviewMode, setInterviewMode] = useState('interview'); // 'learn' or 'interview'
+  const [preparationMode, setPreparationMode] = useState('interview'); // 'learn' or 'interview'
   const [interviewerType, setInterviewerType] = useState('technical');
   const [learningStyle, setLearningStyle] = useState('theory_code'); // 'project' or 'theory_code'
 
@@ -40,7 +40,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const result = await parsePDF(file);
+      const result = await parseFile(file);
       setTextFunction(result.text);
     } catch (err) {
       setError('Failed to parse PDF. Please try again.');
@@ -63,9 +63,9 @@ const Dashboard = () => {
         resumeText, 
         jdText, 
         preparationDays,
-        interviewMode,
-        interviewMode === 'interview' ? interviewerType : null,
-        interviewMode === 'learn' ? learningStyle : 'theory_code'
+        preparationMode,
+        preparationMode === 'interview' ? interviewerType : null,
+        preparationMode === 'learn' ? learningStyle : 'theory_code'
       );
       setRoadmapData(result);
     } catch (err) {
@@ -105,8 +105,8 @@ const Dashboard = () => {
       const result = await generatePanicMode(
         resumeText, 
         jdText,
-        interviewMode,
-        interviewMode === 'interview' ? interviewerType : null
+        preparationMode,
+        preparationMode === 'interview' ? interviewerType : null
       );
       setPanicModeData(result);
     } catch (err) {
@@ -209,14 +209,14 @@ const Dashboard = () => {
                 <label className="cursor-pointer">
                   <input
                     type="file"
-                    accept=".pdf"
+                    accept=".pdf,.txt"
                     onChange={(e) => handlePDFUpload(e, setResumeText)}
                     className="hidden"
                     disabled={loading}
                   />
                   <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
                     <Upload size={16} />
-                    <span className="text-sm font-medium">Upload PDF</span>
+                    <span className="text-sm font-medium">Upload File</span>
                   </div>
                 </label>
               </div>
@@ -240,14 +240,14 @@ const Dashboard = () => {
               <label className="cursor-pointer">
                 <input
                   type="file"
-                  accept=".pdf"
+                  accept=".pdf,.txt"
                   onChange={(e) => handlePDFUpload(e, setJdText)}
                   className="hidden"
                   disabled={loading}
                 />
                 <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
                   <Upload size={16} />
-                  <span className="text-sm font-medium">Upload PDF</span>
+                  <span className="text-sm font-medium">Upload File</span>
                 </div>
               </label>
             </div>
@@ -266,9 +266,9 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold text-slate-800 mb-4">Preparation Goal</h3>
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <button
-              onClick={() => setInterviewMode('learn')}
+              onClick={() => setPreparationMode('learn')}
               className={`p-4 rounded-lg border-2 transition-all text-left ${
-                interviewMode === 'learn'
+                preparationMode === 'learn'
                   ? 'border-blue-600 bg-blue-50'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
@@ -284,9 +284,9 @@ const Dashboard = () => {
               </div>
             </button>
             <button
-              onClick={() => setInterviewMode('interview')}
+              onClick={() => setPreparationMode('interview')}
               className={`p-4 rounded-lg border-2 transition-all text-left ${
-                interviewMode === 'interview'
+                preparationMode === 'interview'
                   ? 'border-blue-600 bg-blue-50'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
@@ -304,7 +304,7 @@ const Dashboard = () => {
           </div>
 
           {/* Interviewer Type Selection */}
-          {interviewMode === 'interview' && (
+          {preparationMode === 'interview' && (
             <div className="mt-4 pt-4 border-t border-slate-200">
               <h4 className="text-md font-semibold text-slate-800 mb-3">Who will interview you?</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -335,7 +335,7 @@ const Dashboard = () => {
           )}
 
           {/* Learning Style Selection for Learn Mode */}
-          {interviewMode === 'learn' && (
+          {preparationMode === 'learn' && (
             <div className="mt-4 pt-4 border-t border-slate-200">
               <h4 className="text-md font-semibold text-slate-800 mb-3">How do you want to learn?</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -383,43 +383,45 @@ const Dashboard = () => {
         {/* Preparation Days Slider */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
           <h3 className="text-lg font-semibold text-slate-800 mb-4">
-            Days Until Interview: <span className="text-blue-600">{preparationDays}</span>
+            {preparationMode === 'learn' ? 'Days to Learn' : 'Days Until Interview'}: <span className="text-blue-600">{preparationDays}</span>
           </h3>
           <input
             type="range"
             min="1"
-            max="14"
+            max="30"
             value={preparationDays}
             onChange={(e) => setPreparationDays(parseInt(e.target.value))}
             className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
             disabled={loading}
           />
           <div className="flex justify-between text-xs text-slate-500 mt-2">
-            <span>1 days</span>
-            <span>14 days</span>
+            <span>1 day</span>
+            <span>30 days</span>
           </div>
         </div>
 
         {/* Generate Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           {/* Panic Mode Button */}
-          <button
-            onClick={handlePanicMode}
-            disabled={panicLoading || !resumeText.trim() || !jdText.trim()}
-            className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:from-slate-400 disabled:to-slate-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-lg transition duration-200 shadow-lg hover:shadow-xl flex items-center gap-3"
-          >
-            {panicLoading ? (
-              <>
-                <Loader2 className="animate-spin" size={20} />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Zap size={20} />
-                Interview Is Today!
-              </>
-            )}
-          </button>
+          {preparationMode === 'interview' && (
+            <button
+              onClick={handlePanicMode}
+              disabled={panicLoading || !resumeText.trim() || !jdText.trim()}
+              className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:from-slate-400 disabled:to-slate-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-lg transition duration-200 shadow-lg hover:shadow-xl flex items-center gap-3"
+            >
+              {panicLoading ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Zap size={20} />
+                  Interview Is Today!
+                </>
+              )}
+            </button>
+          )}
 
           {/* Regular Generate Button */}
           <button
@@ -434,7 +436,7 @@ const Dashboard = () => {
               </>
             ) : (
               <>
-                Generate {preparationDays}-Day Roadmap
+                {preparationMode === 'learn' ? 'Generate Roadmap' : `Generate ${preparationDays}-Day Roadmap`}
               </>
             )}
           </button>

@@ -12,32 +12,42 @@ Empowering job seekers through intelligent, personalized study roadmaps and last
 
 ## 📖 About The Project
 
-**JobPrep** is an intelligent web application designed specifically for students and fresh graduates facing the challenge of uncertain job requirements. Many companies have varying skill and techstack demands, making it difficult for students to know exactly what to prepare for their dream job.
+**JobPrep** aims to answer a critical question: **Why are recent graduate students unemployed?**
 
-Our platform addresses a fundamental assumption: students have sufficient foundational knowledge and position understanding, but lack confidence in specific skills/techstacks that companies require. JobPrep analyzes the gap between your current capabilities and job requirements, then creates personalized study roadmaps with adaptive role-based prompting to bridge that gap efficiently.
+**Why are recent graduate students unemployed?** Many students struggle to find employment not because they lack foundational knowledge, but because they haven't developed the specific skills and techstacks companies are looking for.
 
-Instead of spending hours or weeks trying to figure out what to study, JobPrep analyzes your resume against any job description and generates a day-by-day learning plan tailored to your timeline and interview type. Whether you have 2 weeks or 2 days until your interview, JobPrep ensures you're studying the right things in the right order, and if you're completely unprepared, Panic Mode has your back.
+**Why do they lack these specific skills?** Each company has different techstack demands, lead to the fact that students face lots of of job posting asking for different technology combinations. Without knowing which companies they'll interview with, it's nearly impossible to predict which skills to prioritize.
 
-### The Core Problem
+**Why don't they know what to prioritize?** Students can't objectively evaluate whether their skills meet company standards. This uncertainty leads to either over-preparation for irrelevant skills or dangerous under-preparation for critical requirements.
 
-Students entering the job market face significant anxiety about meeting diverse employer requirements. The primary challenge splits into two distinct scenarios:
+**Why can't they identify this gap accurately?** Manual resume-to-job comparison is time-intensive, inconsistent, imprecise, and doesn't produce actionable study plans.
+
+**So what's the root cause?** Students lack a tool to automatically analyze the gap between their skills and job requirements, then transform that analysis into personalized, actionable preparation plans. They need something that understands their unique situation and their timeline, who's interviewing them, and what they already know and guides them step-by-step toward a successful interview.
+
+### The Solution: JobPrep
+
+**JobPrep** is an AI-powered interview preparation platform designed to address these challenges. The system helps students in two common scenarios:
 
 1. **📚 Already Learned, But Lack Confidence** - Students have studied the required skills/techstack but need structured review to build confidence and ensure interview readiness
 
 2. **⚡ Haven't Learned, Need Rapid Acquisition** - Students haven't been exposed to the specific skills/techstack the company requires and need to learn them quickly before the interview
 
-**Core Requirement:** Students need a centralized platform to either review existing knowledge or rapidly learn new skills/techstacks that companies demand for job applications and interview preparation.
+**How JobPrep Works:**
 
-### Our Solution
+Upload your resume and target job description, and our Gemini AI analyzes the gap between your background and job requirements. The system then generates:
 
-JobPrep uses powerful Gemini AI with intelligent role-based prompting to compare your background with job requirements, identifying critical gaps and creating actionable daily study plans. Whether you need to **review and reinforce** what you already know or **learn from scratch** under time pressure, our system adapts to your specific situation.
+- **Skill Categorization**: 
+  - ✅ **Strengths to leverage** - What you already know well
+  - ⚠️ **Partial knowledge needing review** - Skills you've learned but need to refresh
+  - 🚨 **Critical gaps requiring immediate learning** - New skills/techstacks you must acquire
 
-The platform categorizes your skills into:
-- ✅ **Strengths to leverage** - What you already know well
-- ⚠️ **Partial knowledge needing review** - Skills you've learned but need to refresh
-- 🚨 **Critical gaps requiring immediate learning** - New skills/techstacks you must acquire
+- **Personalized Study Roadmaps**: Day-by-day learning plans (1-14 days) tailored to your timeline and interview type
 
-For those critical last-minute scenarios, **Panic Mode** generates an emergency cheat sheet highlighting only the most critical information you need to survive the interview. The focus is on learning the jargon, concepts, and talking points needed to pass interviews. This pragmatic approach maximizes your success rate while respecting your time constraints.
+- **Adaptive Role Prompting**: Customized preparation based on who's interviewing you (HR, Technical, Tech Lead, CTO, CEO, or Mixed Panel)
+
+- **Panic Mode**: For those "interview is tomorrow" moments - an emergency cheat sheet with critical gaps, quick wins, must-know topics, and survival tips
+
+Whether you need to **review and reinforce** existing knowledge or **learn from scratch** under time pressure, JobPrep adapts to your situation, ensuring you study the right things in the right order to maximize your interview success rate.
 
 ---
 

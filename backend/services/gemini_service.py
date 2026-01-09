@@ -1,8 +1,13 @@
 import google.generativeai as genai
 import os
 import json
+import logging
 from dotenv import load_dotenv
 from schemas import AnalyzeGapResponse, GapAnalysis, DayRoadmap, DailyTask, PanicModeResponse, MustKnowTopic
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
@@ -167,27 +172,78 @@ Return ONLY valid JSON in this exact format:
           "gap_index": 0
         }}
       ]
+    }},
+    {{
+      "day": 2,
+      "title": "Day 2 title",
+      "focus": "Focus area for day 2",
+      "tasks": [
+        {{
+          "task": "Another task description",
+          "type": "Practice",
+          "duration": "3 hours",
+          "completed": false,
+          "gap_type": "partial",
+          "gap_index": 0
+        }}
+      ]
     }}
+    ...
   ],
   "summary": "Brief 2-3 sentence summary of preparation strategy"
 }}"""
 
     try:
+        # Log request details
+        logger.info(f"[GEMINI] Starting gap analysis - Mode: {interview_mode}, Days: {preparation_days}")
+        logger.debug(f"[GEMINI] Interviewer Type: {interviewer_type}, Learning Style: {learning_style}")
+        logger.debug(f"[GEMINI] Resume length: {len(resume_text)} chars, JD length: {len(jd_text)} chars")
+        
         # Use Gemini Flash model
         model = genai.GenerativeModel('gemini-2.5-flash')
         
+        # Configuration - increase max tokens for longer roadmaps
+        max_tokens = 16384 if preparation_days > 14 else 8192
+        logger.info(f"[GEMINI] Using max_output_tokens: {max_tokens}")
+        
+        # Configuration
+        gen_config = {
+            'temperature': 0.7,
+            'top_p': 0.95,
+            'top_k': 40,
+            'max_output_tokens': max_tokens,
+        }
+        logger.debug(f"[GEMINI] Generation config: {gen_config}")
+        
+        # Call Gemini API
+        logger.info("[GEMINI] Calling Gemini API...")
         response = model.generate_content(
             system_prompt,
-            generation_config={
-                'temperature': 0.7,
-                'top_p': 0.95,
-                'top_k': 40,
-                'max_output_tokens': 8192,
-            }
+            generation_config=gen_config
         )
+        
+        # Log response metadata
+        logger.info(f"[GEMINI] Response received - Candidates: {len(response.candidates) if hasattr(response, 'candidates') else 'N/A'}")
+        
+        # Track token usage metadata
+        if hasattr(response, 'usageMetadata') and response.usageMetadata:
+            usage = response.usageMetadata
+            logger.info(f"[GEMINI] Token Usage:")
+            logger.info(f"  - Prompt tokens: {usage.prompt_token_count if hasattr(usage, 'prompt_token_count') else 'N/A'}")
+            logger.info(f"  - Candidates tokens: {usage.candidates_token_count if hasattr(usage, 'candidates_token_count') else 'N/A'}")
+            logger.info(f"  - Total tokens: {usage.total_token_count if hasattr(usage, 'total_token_count') else 'N/A'}")
+            
+            # Additional metadata if available
+            if hasattr(usage, 'cached_content_token_count') and usage.cached_content_token_count:
+                logger.info(f"  - Cached content tokens: {usage.cached_content_token_count}")
+            if hasattr(usage, 'thoughts_token_count') and usage.thoughts_token_count:
+                logger.info(f"  - Thoughts tokens: {usage.thoughts_token_count}")
+        else:
+            logger.warning("[GEMINI] No usageMetadata available in response")
         
         # Extract and parse JSON response
         response_text = response.text.strip()
+        logger.debug(f"[GEMINI] Raw response length: {len(response_text)} chars")
         
         # Remove markdown code blocks if present
         if response_text.startswith('```json'):
@@ -198,9 +254,14 @@ Return ONLY valid JSON in this exact format:
             response_text = response_text[:-3]
         
         response_text = response_text.strip()
+        logger.debug(f"[GEMINI] Cleaned response length: {len(response_text)} chars")
         
         # Parse JSON
+        logger.info("[GEMINI] Parsing JSON response...")
         result_dict = json.loads(response_text)
+        
+        # Log parsed structure
+        logger.info(f"[GEMINI] Parsed - Critical gaps: {len(result_dict.get('gap_analysis', {}).get('critical_gaps', []))}, Partial skills: {len(result_dict.get('gap_analysis', {}).get('partial_skills', []))}, Days: {len(result_dict.get('daily_roadmap', []))}")
         
         # Validate and create response object
         gap_analysis = GapAnalysis(
@@ -219,6 +280,7 @@ Return ONLY valid JSON in this exact format:
             )
             daily_roadmap.append(day_roadmap)
         
+        logger.info(f"[GEMINI] ✅ Successfully generated {len(daily_roadmap)}-day roadmap")
         return AnalyzeGapResponse(
             gap_analysis=gap_analysis,
             daily_roadmap=daily_roadmap,
@@ -226,8 +288,15 @@ Return ONLY valid JSON in this exact format:
         )
         
     except json.JSONDecodeError as e:
+        logger.error(f"[GEMINI] ❌ JSON Parse Error: {str(e)}")
+        logger.error(f"[GEMINI] Response text preview: {response_text[:500]}...")
         raise ValueError(f"Failed to parse Gemini response as JSON: {str(e)}")
+    except KeyError as e:
+        logger.error(f"[GEMINI] ❌ Missing key in response: {str(e)}")
+        logger.error(f"[GEMINI] Available keys: {list(result_dict.keys()) if 'result_dict' in locals() else 'N/A'}")
+        raise ValueError(f"Invalid response structure from Gemini: missing {str(e)}")
     except Exception as e:
+        logger.error(f"[GEMINI] ❌ Unexpected error: {type(e).__name__}: {str(e)}")
         raise Exception(f"Error calling Gemini API: {str(e)}")
 
 

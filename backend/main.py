@@ -2,7 +2,15 @@ from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
+import logging
 from dotenv import load_dotenv
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 from schemas import (
     AnalyzeGapRequest, 
@@ -17,7 +25,7 @@ from schemas import (
 )
 from database import init_db, get_db, UserModel
 from services.gemini_service import analyze_gap_with_gemini, generate_topic_content_with_gemini
-from services.pdf_service import extract_text_from_pdf
+from services.file_service import extract_text_from_file
 
 load_dotenv()
 
@@ -53,6 +61,9 @@ async def analyze_gap(request: AnalyzeGapRequest):
     Returns match percentage, critical gaps, and a daily roadmap.
     """
     try:
+        logger.info(f"[API] /analyze_gap - Mode: {request.interview_mode}, Days: {request.preparation_days}")
+        logger.debug(f"[API] Request params - Interviewer: {request.interviewer_type}, Learning: {request.learning_style}")
+        
         result = await analyze_gap_with_gemini(
             resume_text=request.resume_text,
             jd_text=request.jd_text,
@@ -61,25 +72,38 @@ async def analyze_gap(request: AnalyzeGapRequest):
             interviewer_type=request.interviewer_type,
             learning_style=request.learning_style or "theory_code"
         )
+        
+        logger.info(f"[API] ✅ Successfully generated roadmap with {len(result.daily_roadmap)} days")
         return result
+        
+    except ValueError as e:
+        # Client errors (JSON parsing, validation)
+        logger.error(f"[API] ❌ Validation error: {str(e)}")
+        raise HTTPException(status_code=422, detail=f"Invalid response from AI: {str(e)}")
     except Exception as e:
+        # Server errors (API failures, timeouts)
+        logger.error(f"[API] ❌ Server error: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error analyzing gap: {str(e)}")
 
 
-@app.post("/parse_pdf", response_model=PDFUploadResponse)
-async def parse_pdf(file: UploadFile = File(...)):
+@app.post("/parse_file", response_model=PDFUploadResponse)
+async def parse_file(file: UploadFile = File(...)):
     """
-    Parse PDF file and extract text content.
+    Parse PDF or TXT file and extract text content.
     """
-    if not file.filename.endswith('.pdf'):
-        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+    allowed_extensions = ('.pdf', '.txt')
+    if not file.filename.lower().endswith(allowed_extensions):
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Unsupported file format. Please upload PDF or TXT files."
+        )
     
     try:
         content = await file.read()
-        text, page_count = extract_text_from_pdf(content)
+        text, page_count = extract_text_from_file(content, file.filename)
         return PDFUploadResponse(text=text, page_count=page_count)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error parsing PDF: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error parsing file: {str(e)}")
 
 
 @app.post("/users", response_model=User)
