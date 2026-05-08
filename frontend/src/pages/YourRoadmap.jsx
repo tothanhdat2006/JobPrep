@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, Upload, FileText, AlertCircle, Calendar, Target } from 'lucide-react';
 import Header from '../components/Header';
 
-const YourRoadmap = ({ user, onSignOut, onLoadProgress, onBack }) => {
+const YourRoadmap = ({ onLoadProgress, onBack }) => {
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -56,7 +56,7 @@ const YourRoadmap = ({ user, onSignOut, onLoadProgress, onBack }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100">
-      <Header user={user} onSignOut={onSignOut} />
+      <Header />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <button

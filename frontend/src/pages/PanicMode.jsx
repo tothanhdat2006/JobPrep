@@ -15,7 +15,7 @@ import {
 import Header from '../components/Header';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
-const PanicMode = ({ user, onSignOut, onBack, panicData, resumeText, jdText }) => {
+const PanicMode = ({ onBack, panicData, resumeText, jdText }) => {
   const [expandedSection, setExpandedSection] = useState(null);
 
   const toggleSection = (section) => {
@@ -93,7 +93,7 @@ const PanicMode = ({ user, onSignOut, onBack, panicData, resumeText, jdText }) =
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50">
-      <Header user={user} onSignOut={onSignOut} />
+      <Header />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <button

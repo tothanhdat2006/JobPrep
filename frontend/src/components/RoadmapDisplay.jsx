@@ -15,7 +15,7 @@ import {
 import { generateTopicContent } from '../services/api';
 import TaskDetailModal from './TaskDetailModal';
 
-const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgress }) => {
+const RoadmapDisplay = ({ data, onBack, resumeText, jdText, savedProgress }) => {
   const [completedTasks, setCompletedTasks] = useState(savedProgress?.completedTasks ? new Set(savedProgress.completedTasks) : new Set());
   const [selectedTask, setSelectedTask] = useState(null);
   const [taskNotes, setTaskNotes] = useState(savedProgress?.taskNotes || {});
@@ -137,8 +137,7 @@ const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgr
       aiContent,
       learningStyle,
       resumeText,
-      jdText,
-      userName
+      jdText
     };
     
     setLastSaved(new Date().toISOString());
@@ -176,7 +175,7 @@ const RoadmapDisplay = ({ data, onBack, userName, resumeText, jdText, savedProgr
                 Your Study Roadmap
               </h1>
               <p className="text-slate-600">
-                {userName ? `Welcome ${userName}!` : 'Good luck with your preparation!'}
+                Good luck with your preparation!
               </p>
               {lastSaved && (
                 <p className="text-xs text-slate-500 mt-1">

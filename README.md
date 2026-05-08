@@ -79,13 +79,11 @@ Whether you need to **review and reinforce** existing knowledge or **learn from 
 - **[FastAPI](https://fastapi.tiangolo.com/)** (v0.109) - Modern, high-performance Python web framework
 - **[Google Gemini](https://deepmind.google/technologies/gemini/)** (v2.5 Flash) - Advanced AI for intelligent gap analysis
 
-### Database & Auth
+### Database & AI
 - **[SQLite](https://www.sqlite.org/)** - Lightweight, serverless SQL database
 - **[SQLAlchemy](https://www.sqlalchemy.org/)** (v2.0) - Python SQL toolkit and ORM
-- **[Firebase Authentication](https://firebase.google.com/products/auth)** - Secure Google OAuth integration
 
 ### Development Tools
-- **[uv](https://github.com/astral-sh/uv)** - Ultra-fast Python package installer
 - **[Uvicorn](https://www.uvicorn.org/)** - ASGI server for FastAPI
 
 ---
@@ -97,10 +95,34 @@ Whether you need to **review and reinforce** existing knowledge or **learn from 
 - **Python** 3.10 or higher
 - **Node.js** v18 or higher
 - **npm** or **yarn** package manager
-- Google Gemini API key ([Get one here](https://aistudio.google.com/api-keys))
-- Firebase project with Google Authentication enabled
+- Google Gemini API key ([Get one here](https://ai.google.dev/))
 
-### Installation
+### Quick Start (Automated Setup)
+
+For the easiest setup, run the automated setup script:
+
+**Windows:**
+```bash
+setup.bat
+```
+
+**Linux/Mac:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+The script will automatically:
+1. Check for Python and Node.js
+2. Ask for your Google AI Studio API key
+3. Create Python virtual environment
+4. Install all dependencies (backend and frontend)
+5. Configure environment variables
+6. Start both servers
+
+### Manual Installation
+
+If you prefer to set up manually:
 
 #### Backend Setup
 
@@ -109,33 +131,23 @@ Whether you need to **review and reinforce** existing knowledge or **learn from 
    cd backend
    ```
 
-2. **Install uv (ultra-fast package installer)**
-   ```bash
-   pip install uv
-   ```
-
-3. **Create virtual environment and install dependencies**
+2. **Create virtual environment and install dependencies**
    
    **Windows:**
    ```bash
-   setup_venv.bat
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -r requirements.txt
    ```
    
    **Linux/Mac:**
    ```bash
-   chmod +x setup_venv.sh
-   ./setup_venv.sh
-   ```
-   
-   **Or manually:**
-   ```bash
-   uv venv
-   source .venv/bin/activate  # Linux/Mac
-   .venv\Scripts\activate     # Windows
-   uv pip install -r requirements.txt
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
    ```
 
-4. **Set up environment variables**
+3. **Set up environment variables**
    
    Create a `.env` file in `backend/` directory:
    ```env
@@ -174,25 +186,10 @@ Whether you need to **review and reinforce** existing knowledge or **learn from 
    npm install
    ```
 
-3. **Set up Firebase**
-   
-   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-   - Enable Google Authentication:
-     - Go to Authentication → Sign-in method
-     - Enable Google provider
-     - Add support email
-   - Get your Firebase configuration from Project Settings
+3. **Set up environment variables**
    
    Create a `.env` file in `frontend/` directory:
    ```env
-   # Firebase Configuration
-   VITE_FIREBASE_API_KEY=your_firebase_api_key
-   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   VITE_FIREBASE_APP_ID=your_app_id
-   
    # Backend API URL
    VITE_API_URL=http://localhost:8000
    ```
@@ -210,15 +207,15 @@ Whether you need to **review and reinforce** existing knowledge or **learn from 
 
 ### For Job Seekers
 
-1. **Sign In with Google**
-   - Visit the application
-   - Click "Sign in with Google"
-   - Authorize the application
+1. **Access the Application**
+   - Run the setup script or start the servers manually
+   - Open http://localhost:5173 in your browser
+   - You'll be taken directly to the main dashboard
 
 2. **Upload Your Materials**
-   - Paste or upload your resume (PDF supported)
-   - Paste or upload the target job description (PDF supported)
-   - Select days until interview (3-14 days)
+   - Paste or upload your resume (PDF or TXT supported)
+   - Paste or upload the target job description (PDF or TXT supported)
+   - Select days until interview (1-30 days)
 
 3. **Choose Your Preparation Mode**
    
@@ -284,18 +281,15 @@ JobPrep/
 └── frontend/
     ├── src/
     │   ├── App.jsx                # Main app with routing
-    │   ├── firebase.js            # Firebase configuration
     │   ├── components/
     │   │   ├── Header.jsx         # Navigation header
-    │   │   ├── ProtectedRoute.jsx # Route protection wrapper
+    │   │   ├── ProtectedRoute.jsx # Route wrapper (no auth)
     │   │   ├── RoadmapDisplay.jsx # Roadmap visualization
     │   │   ├── TaskDetailModal.jsx# Task detail viewer
-    │   │   ├── UserProfile.jsx    # User profile management
     │   │   └── MarkdownRenderer.jsx# Markdown content renderer
     │   ├── context/
-    │   │   └── AuthContext.jsx    # Authentication state management
+    │   │   └── AuthContext.jsx    # Context setup (no auth)
     │   ├── pages/
-    │   │   ├── SignIn.jsx         # Google sign-in page
     │   │   ├── Dashboard.jsx      # Main input/upload page with mode selection
     │   │   ├── YourRoadmap.jsx    # Saved roadmaps manager
     │   │   └── PanicMode.jsx      # Emergency preparation cheat sheet
@@ -327,12 +321,6 @@ JobPrep/
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `VITE_FIREBASE_API_KEY` | Firebase API key | `AIza...` |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase auth domain | `project.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID | `your-project-id` |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket | `project.appspot.com` |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase sender ID | `123456789` |
-| `VITE_FIREBASE_APP_ID` | Firebase app ID | `1:123:web:abc` |
 | `VITE_API_URL` | Backend API URL | `http://localhost:8000` |
 
 ---
@@ -341,18 +329,17 @@ JobPrep/
 
 ### Common Issues
 
-**Issue: Firebase authentication fails with `auth/operation-not-allowed`**
-- Solution: Enable Google sign-in provider in Firebase Console → Authentication → Sign-in method**Issue: Backend fails with `GOOGLE_API_KEY not found`**
-- Solution: Create `.env` file in `backend/` with your Gemini API key
+**Issue: Backend fails with `GOOGLE_API_KEY not found`**
+- Solution: Create `.env` file in `backend/` with your Google Gemini API key from https://ai.google.dev/
 
 **Issue: Frontend can't connect to backend**
-- Solution: Ensure backend is running on port 8000 and `VITE_API_URL` is correct
+- Solution: Ensure backend is running on port 8000 and `VITE_API_URL` is correct in frontend `.env`
 
 **Issue: CORS errors**
-- Solution: Check `FRONTEND_URL` in backend `.env` matches your frontend URL
+- Solution: Check `FRONTEND_URL` in backend `.env` matches your frontend URL (http://localhost:5173)
 
 **Issue: PDF upload fails**
-- Solution: Ensure file is a valid PDF and under size limit
+- Solution: Ensure file is a valid PDF or TXT and under size limit
 
 **Issue: Module import errors (frontend)**
 - Solution: Delete `node_modules` and `package-lock.json`, then run `npm install`
@@ -361,7 +348,13 @@ JobPrep/
 - Solution: Ensure both resume and JD are provided; check backend logs for AI generation errors
 
 **Issue: Roadmap not saving**
-- Solution: Check that you're signed in with Google; verify database permissions
+- Solution: Verify the file system has write permissions; check browser console for errors
+
+**Issue: Setup script fails on Windows**
+- Solution: Run PowerShell as Administrator; ensure Python and Node.js are in your system PATH
+
+**Issue: Python virtual environment activation fails**
+- Solution: On Windows, use `.venv\Scripts\activate.bat`; on Linux/Mac, use `source .venv/bin/activate`
 
 ---
 ## 🎯 Feature Deep Dive

@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { analyzeGap, parseFile, generatePanicMode } from '../services/api';
 import RoadmapDisplay from '../components/RoadmapDisplay';
 import Header from '../components/Header';
-import UserProfile from '../components/UserProfile';
 import YourRoadmap from './YourRoadmap';
 import PanicMode from './PanicMode';
 import { 
@@ -12,19 +10,16 @@ import {
   Briefcase, 
   Loader2,
   AlertCircle,
-  UserCircle,
   Zap
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
   const [resumeText, setResumeText] = useState('');
   const [jdText, setJdText] = useState('');
   const [preparationDays, setPreparationDays] = useState(7);
   const [loading, setLoading] = useState(false);
   const [roadmapData, setRoadmapData] = useState(null);
   const [error, setError] = useState(null);
-  const [showProfile, setShowProfile] = useState(false);
   const [importedProgress, setImportedProgress] = useState(null);
   const [showYourRoadmap, setShowYourRoadmap] = useState(false);
   const [panicModeData, setPanicModeData] = useState(null);
@@ -76,14 +71,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (err) {
-      console.error('Sign out failed:', err);
-    }
-  };
-
   const handleLoadProgress = (progressData) => {
     // Restore all the data
     setImportedProgress(progressData);
@@ -120,8 +107,6 @@ const Dashboard = () => {
   if (panicModeData) {
     return (
       <PanicMode
-        user={user}
-        onSignOut={handleSignOut}
         onBack={() => setPanicModeData(null)}
         panicData={panicModeData}
         resumeText={resumeText}
@@ -138,7 +123,6 @@ const Dashboard = () => {
           setRoadmapData(null);
           setImportedProgress(null);
         }} 
-        userName={user?.displayName}
         resumeText={resumeText}
         jdText={jdText}
         savedProgress={importedProgress}
@@ -149,8 +133,6 @@ const Dashboard = () => {
   if (showYourRoadmap) {
     return (
       <YourRoadmap
-        user={user}
-        onSignOut={handleSignOut}
         onLoadProgress={handleLoadProgress}
         onBack={() => setShowYourRoadmap(false)}
       />
@@ -160,16 +142,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100">
       {/* Header */}
-      <Header user={user} onSignOut={handleSignOut} onYourRoadmap={() => setShowYourRoadmap(true)} />
-
-      {/* User Profile Modal */}
-      {showProfile && (
-        <UserProfile
-          user={user}
-          onUseProfile={(text) => setResumeText(text)}
-          onClose={() => setShowProfile(false)}
-        />
-      )}
+      <Header onYourRoadmap={() => setShowYourRoadmap(true)} />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -198,14 +171,6 @@ const Dashboard = () => {
                 <h3 className="text-lg font-semibold text-slate-800">Resume</h3>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={() => setShowProfile(true)}
-                  className="flex items-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition"
-                  disabled={loading}
-                >
-                  <UserCircle size={16} />
-                  <span className="text-sm font-medium">My Profile</span>
-                </button>
                 <label className="cursor-pointer">
                   <input
                     type="file"
