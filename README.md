@@ -415,7 +415,6 @@ We manually review for code/suggestion before using
 - ⚡ [Vite Documentation](https://vitejs.dev/)
 - 🚀 [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - 🎨 [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- 🔥 [Firebase Authentication Docs](https://firebase.google.com/docs/auth)
 - 🤖 [Google Gemini API Docs](https://ai.google.dev/docs)
 
 ---

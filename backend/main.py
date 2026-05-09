@@ -2,8 +2,18 @@ from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
+import sys
+# Ensure the backend package directory is on sys.path so local imports work
+# (useful when running with embeddable Python which may not include CWD)
+sys.path.insert(0, os.path.dirname(__file__))
 import logging
+from pathlib import Path
 from dotenv import load_dotenv
+
+# Load .env from backend directory
+backend_dir = Path(__file__).parent
+env_file = backend_dir / '.env'
+load_dotenv(env_file)
 
 # Configure logging
 logging.basicConfig(
@@ -27,8 +37,6 @@ from database import init_db, get_db, UserModel
 from services.gemini_service import analyze_gap_with_gemini, generate_topic_content_with_gemini
 from services.file_service import extract_text_from_file
 
-load_dotenv()
-
 app = FastAPI(title="JobPrep API", version="1.0.0")
 
 # CORS Configuration
@@ -46,7 +54,7 @@ app.add_middleware(
 def startup_event():
     """Initialize database on startup"""
     init_db()
-    print("✅ Database initialized")
+    print("[OK] Database initialized")
 
 
 @app.get("/")
@@ -73,16 +81,16 @@ async def analyze_gap(request: AnalyzeGapRequest):
             learning_style=request.learning_style or "theory_code"
         )
         
-        logger.info(f"[API] ✅ Successfully generated roadmap with {len(result.daily_roadmap)} days")
+        logger.info(f"[API] [OK] Successfully generated roadmap with {len(result.daily_roadmap)} days")
         return result
         
     except ValueError as e:
         # Client errors (JSON parsing, validation)
-        logger.error(f"[API] ❌ Validation error: {str(e)}")
+        logger.error(f"[API] [ERROR] Validation error: {str(e)}")
         raise HTTPException(status_code=422, detail=f"Invalid response from AI: {str(e)}")
     except Exception as e:
         # Server errors (API failures, timeouts)
-        logger.error(f"[API] ❌ Server error: {type(e).__name__}: {str(e)}")
+        logger.error(f"[API] [ERROR] Server error: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error analyzing gap: {str(e)}")
 
 

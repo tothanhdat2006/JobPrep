@@ -1,3 +1,9 @@
 .venv
 .ttl
 .env
+.env.*
+__pycache__/**/*
+*.log
+*.db
+*.sqlite
+python/

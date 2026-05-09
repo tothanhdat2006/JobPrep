@@ -3,6 +3,7 @@ from google.genai import types
 import os
 import json
 import logging
+from pathlib import Path
 from dotenv import load_dotenv
 from schemas import AnalyzeGapResponse, GapAnalysis, DayRoadmap, DailyTask, PanicModeResponse, MustKnowTopic
 
@@ -10,7 +11,10 @@ from schemas import AnalyzeGapResponse, GapAnalysis, DayRoadmap, DailyTask, Pani
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-load_dotenv()
+# Load .env from backend directory
+backend_dir = Path(__file__).parent.parent
+env_file = backend_dir / '.env'
+load_dotenv(env_file)
 
 # Configure Google Gemini API
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -265,7 +269,7 @@ Return ONLY valid JSON in this exact format:
             )
             daily_roadmap.append(day_roadmap)
         
-        logger.info(f"[GEMINI] ✅ Successfully generated {len(daily_roadmap)}-day roadmap")
+        logger.info(f"[GEMINI] [OK] Successfully generated {len(daily_roadmap)}-day roadmap")
         return AnalyzeGapResponse(
             gap_analysis=gap_analysis,
             daily_roadmap=daily_roadmap,
@@ -273,15 +277,15 @@ Return ONLY valid JSON in this exact format:
         )
         
     except json.JSONDecodeError as e:
-        logger.error(f"[GEMINI] ❌ JSON Parse Error: {str(e)}")
+        logger.error(f"[GEMINI] [ERROR] JSON Parse Error: {str(e)}")
         logger.error(f"[GEMINI] Response text preview: {response_text[:500]}...")
         raise ValueError(f"Failed to parse Gemini response as JSON: {str(e)}")
     except KeyError as e:
-        logger.error(f"[GEMINI] ❌ Missing key in response: {str(e)}")
+        logger.error(f"[GEMINI] [ERROR] Missing key in response: {str(e)}")
         logger.error(f"[GEMINI] Available keys: {list(result_dict.keys()) if 'result_dict' in locals() else 'N/A'}")
         raise ValueError(f"Invalid response structure from Gemini: missing {str(e)}")
     except Exception as e:
-        logger.error(f"[GEMINI] ❌ Unexpected error: {type(e).__name__}: {str(e)}")
+        logger.error(f"[GEMINI] [ERROR] Unexpected error: {type(e).__name__}: {str(e)}")
         raise Exception(f"Error calling Gemini API: {str(e)}")
 
 

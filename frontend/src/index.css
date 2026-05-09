@@ -8,8 +8,21 @@
   font-weight: 400;
 }
 
+html {
+    overflow: scroll;
+    scroll-behavior: smooth;
+    scroll-padding-top: 3rem;
+}
+
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+
+
 body {
   margin: 0;
   min-height: 100vh;
   background-color: #f8fafc;
 }
+
