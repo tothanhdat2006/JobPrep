@@ -8,6 +8,7 @@ Empowering job seekers through intelligent, personalized study roadmaps and last
 
 </div>
 
+![Generated roadmap with detailed gaps analysis and preparation strategy](./assets/roadmap.png)
 ---
 
 ## 📖 About The Project
@@ -26,6 +27,8 @@ Empowering job seekers through intelligent, personalized study roadmaps and last
 
 ### The Solution: JobPrep
 
+![Main dashboard of the website](./assets/menu.png)
+
 **JobPrep** is an AI-powered interview preparation platform designed to address these challenges. The system helps students in two common scenarios:
 
 1. **📚 Already Learned, But Lack Confidence** - Students have studied the required skills/techstack but need structured review to build confidence and ensure interview readiness
@@ -41,13 +44,16 @@ Upload your resume and target job description, and our Gemini AI analyzes the ga
   - ⚠️ **Partial knowledge needing review** - Skills you've learned but need to refresh
   - 🚨 **Critical gaps requiring immediate learning** - New skills/techstacks you must acquire
 
-- **Personalized Study Roadmaps**: Day-by-day learning plans (1-14 days) tailored to your timeline and interview type
+- **Personalized Study Roadmaps**: Day-by-day learning plans (1-30 days) tailored to your timeline and interview type
 
 - **Adaptive Role Prompting**: Customized preparation based on who's interviewing you (HR, Technical, Tech Lead, CTO, CEO, or Mixed Panel)
 
 - **Panic Mode**: For those "interview is tomorrow" moments - an emergency cheat sheet with critical gaps, quick wins, must-know topics, and survival tips
 
 Whether you need to **review and reinforce** existing knowledge or **learn from scratch** under time pressure, JobPrep adapts to your situation, ensuring you study the right things in the right order to maximize your interview success rate.
+
+
+![Note taking feature and AI-generated content](./assets/detail.png)
 
 ---
 
@@ -59,7 +65,7 @@ Whether you need to **review and reinforce** existing knowledge or **learn from 
 | 🎭 **Adaptive Role Prompting** | AI customizes preparation based on interviewer type (HR, Technical, Lead, CTO, CEO, or Mixed Panel) |
 | 🚨 **Panic Mode** | Last-minute interview survival guide with critical gaps, quick wins, must-know topics, and downloadable cheat sheet |
 | 📚 **Dual Learning Modes** | Choose between "Interview Prep" for upcoming interviews or "Learning Mode" for building foundational knowledge |
-| 🗓️ **Customizable Roadmaps** | Generate 1-14 day study plans tailored to your interview timeline and preparation needs |
+| 🗓️ **Customizable Roadmaps** | Generate 1-30 day study plans tailored to your interview timeline and preparation needs |
 | 🎯 **Priority-Based Learning** | Focus on dealbreaker skills first, then strengthen partial knowledge areas |
 | 📥 **Export Options** | Download panic mode cheat sheets and study plans for offline review |
 
