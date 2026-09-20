@@ -7,3 +7,7 @@ __pycache__/**/*
 *.db
 *.sqlite
 python/
+
+AGENTS.md
+GEMINI.md
+.agents/

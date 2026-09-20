@@ -3,6 +3,7 @@ from google.genai import types
 import os
 import json
 import logging
+import time
 from pathlib import Path
 from dotenv import load_dotenv
 from schemas import AnalyzeGapResponse, GapAnalysis, DayRoadmap, DailyTask, PanicModeResponse, MustKnowTopic
@@ -23,6 +24,63 @@ if not GOOGLE_API_KEY:
 
 # Initialize Gemini client
 client = genai.Client(api_key=GOOGLE_API_KEY)
+
+# Primary model and fallback candidate models
+PRIMARY_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+FALLBACK_MODELS = list(dict.fromkeys([
+    PRIMARY_MODEL,
+    "gemini-3.8-flash",
+    "gemini-3.7-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite",
+]))
+
+
+def generate_content_with_fallback(contents, config=None, preferred_model: str = None, retries_per_model: int = 2):
+    """
+    Calls Gemini API with automatic retry on transient errors (503 UNAVAILABLE, 429 RESOURCE_EXHAUSTED)
+    and fallback cascade across current supported Gemini models.
+    """
+    models_to_try = [preferred_model] if preferred_model else []
+    for m in FALLBACK_MODELS:
+        if m not in models_to_try:
+            models_to_try.append(m)
+
+    last_error = None
+    for model_name in models_to_try:
+        for attempt in range(1, retries_per_model + 1):
+            try:
+                logger.info(f"[GEMINI] Generating content with model: {model_name} (attempt {attempt}/{retries_per_model})")
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=contents,
+                    config=config,
+                )
+                return response
+            except Exception as e:
+                last_error = e
+                err_str = str(e)
+                is_transient = any(code in err_str for code in ("503", "429", "UNAVAILABLE", "RESOURCE_EXHAUSTED", "high demand"))
+                
+                if is_transient and attempt < retries_per_model:
+                    wait_time = attempt * 1.5
+                    logger.warning(
+                        f"[GEMINI] Model '{model_name}' encountered transient error ({type(e).__name__}: {err_str}). "
+                        f"Retrying in {wait_time:.1f}s (attempt {attempt}/{retries_per_model})..."
+                    )
+                    time.sleep(wait_time)
+                else:
+                    logger.warning(
+                        f"[GEMINI] Model '{model_name}' failed after attempt {attempt}: {type(e).__name__}: {err_str}. "
+                        f"Attempting fallback to next model..."
+                    )
+                    break
+
+    if last_error:
+        raise last_error
+    raise RuntimeError("No Gemini models available to process request")
 
 
 def get_interview_context(interview_mode: str = "interview", interviewer_type: str = "technical", learning_style: str = "theory_code") -> str:
@@ -209,10 +267,9 @@ Return ONLY valid JSON in this exact format:
         max_tokens = 16384 if preparation_days > 14 else 8192
         logger.info(f"[GEMINI] Using max_output_tokens: {max_tokens}")
         
-        # Call Gemini API with new client
+        # Call Gemini API with fallback support
         logger.info("[GEMINI] Calling Gemini API with JSON schema...")
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
+        response = generate_content_with_fallback(
             contents=system_prompt,
             config=types.GenerateContentConfig(
                 temperature=0.7,
@@ -348,8 +405,7 @@ Keep the tone encouraging and practical. Focus on interview readiness, not full 
 """
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
+        response = generate_content_with_fallback(
             contents=system_prompt,
             config=types.GenerateContentConfig(
                 temperature=0.8,
@@ -418,9 +474,8 @@ Keep talking points concise and interview-ready. Use markdown formatting for rea
 """
 
     try:
-        # Call Gemini API with new client
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
+        # Call Gemini API with fallback support
+        response = generate_content_with_fallback(
             contents=system_prompt,
             config=types.GenerateContentConfig(
                 temperature=0.7,
